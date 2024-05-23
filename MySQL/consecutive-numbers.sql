@@ -1,17 +1,11 @@
+/*
 # Time:  O(n)
 # Space: O(n)
+*/
 
-SELECT DISTINCT(Num) AS ConsecutiveNums
-FROM (
-    SELECT
-    Num,
-    @counter := IF(@prev = Num, @counter + 1, 1) AS how_many_cnt_in_a_row,
-    @prev := Num
-    FROM Logs y, (SELECT @counter:=1, @prev:=NULL) vars
-) sq
-WHERE how_many_cnt_in_a_row >= 3
+/** this is a ms sql script **/
 
-SELECT DISTINCT l1.Num  as ConsecutiveNums
-FROM Logs l1, Logs l2, Logs l3  
-WHERE l1.Id + 1 = l2.Id AND l2.Id + 1 = l3.Id AND l1.Num = l2.Num AND l2.Num = l3.Num 
-
+/* Write your T-SQL query statement below */
+SELECT DISTINCT l1.num AS ConsecutiveNums 
+FROM Logs l1, Logs l2, Logs l3 
+WHERE l1.id = l2.id - 1 AND l2.id = l3.id - 1 AND l1.num = l2.num AND l2.num = l3.num;

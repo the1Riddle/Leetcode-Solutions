@@ -1,7 +1,12 @@
 # Time:  O(n^2)
 # Space: O(n)
 
-DELETE p1
-FROM Person p1, Person p2
-WHERE p1.Email = p2.Email AND p1.Id > p2.Id
+DELETE FROM person
+WHERE id NOT IN (
+SELECT sub.min_id
+FROM(
+SELECT Email, MIN(ID) AS min_id
+FROM Person
+GROUP BY Email
+) sub)
 

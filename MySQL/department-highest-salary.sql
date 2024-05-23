@@ -1,14 +1,22 @@
 # Time:  O(n^2)
 # Space: O(n)
 
-SELECT d.Department AS Department, e.Name AS Employee, d.Salary AS Salary
-FROM (SELECT Department.Id AS DepartmentId, Department.Name AS Department, emp.Salary AS Salary
-        FROM Department JOIN (SELECT DepartmentId, MAX(Salary) AS Salary FROM Employee GROUP BY DepartmentId) emp
-        ON Department.Id = emp.DepartmentId) d 
-      JOIN Employee e 
-      ON e.DepartmentId = d.DepartmentId and e.Salary = d.Salary
+SELECT DEPARTMENT,EMPLOYEE,SALARY FROM 
+(SELECT D.NAME AS DEPARTMENT,E.NAME AS EMPLOYEE,E.SALARY,RANK()OVER(PARTITION BY D.ID ORDER BY SALARY DESC)
+AS RN FROM DEPARTMENT D JOIN EMPLOYEE E ON E.DEPARTMENTID = D.ID)TEMP WHERE RN=1;
 
-SELECT Department.Name AS Department, Employee.Name AS Employee, Employee.Salary AS Salary
-FROM Department JOIN Employee ON Employee.DepartmentId = Department.Id
-WHERE Employee.Salary IN (SELECT MAX(e.Salary) FROM Employee e WHERE e.DepartmentId = Employee.DepartmentId)
+/** SOLUTION TWO **/
+
+SELECT
+D.name AS Department,rankedE.name AS Employee,rankedE.salary AS Salary
+FROM (
+    SELECT
+    RANK() OVER (
+        PARTITION BY E.departmentId ORDER BY E.salary DESC) AS s_rank
+        ,id,name,salary,departmentId
+        FROM Employee E
+) rankedE
+LEFT JOIN Department D
+ON rankedE.departmentId = D.id
+WHERE rankedE.s_rank = 1
 

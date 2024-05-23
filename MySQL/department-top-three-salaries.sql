@@ -1,9 +1,11 @@
 # Time:  O(n^2)
 # Space: O(n)
 
-SELECT D.Name AS Department, E.Name AS Employee, E.Salary AS Salary 
-FROM Employee E INNER JOIN Department D ON E.DepartmentId = D.Id 
-WHERE (SELECT COUNT(DISTINCT(Salary)) FROM Employee 
-       WHERE DepartmentId = E.DepartmentId AND Salary > E.Salary) < 3
-ORDER by E.DepartmentId, E.Salary DESC;
+SELECT dp.name AS Department,ab.name AS Employee, ab.Salary
+FROM 
+(SELECT *,
+dense_rank() OVER(PARTITION BY departmentID ORDER BY salary DESC) AS sal_rank
+FROM Employee) ab
+LEFT JOIN Department dp ON ab.departmentId = dp.id 
+WHERE ab.sal_rank <=3
 
